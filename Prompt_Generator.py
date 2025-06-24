@@ -1,91 +1,83 @@
 import streamlit as st
-import random
 
-# --- DATA UNTUK PROMPT (DARI BAGIAN 2) ---
-# Menggunakan dictionary agar lebih terstruktur
+# --- OPSI DASAR (Hanya untuk hal-hal yang sering diulang) ---
+# Subjek dan Aksi sekarang akan diketik bebas oleh pengguna
 options = {
     "gaya_visual": [
-        "Fotorealistik, kualitas tinggi", "Sinematik, film 35mm", "Video dokumenter alam liar",
-        "Gaya anime Ghibli", "Film noir, hitam putih", "Rekaman VHS tahun 1980-an",
-        "Cyberpunk, penuh lampu neon", "Fantasi epik, gaya Lord of the Rings"
-    ],
-    "subjek_utama": [
-        "Seekor astronot yang kesepian", "Robot raksasa yang sedang berkarat",
-        "Seekor rubah ajaib dengan bulu bercahaya", "Seorang detektif di era Victoria",
-        "Mobil terbang futuristik", "Pasangan lansia yang sedang berdansa"
-    ],
-    "aksi_kegiatan": [
-        "menjelajahi reruntuhan kuno", "berlari di tengah hujan lebat",
-        "membaca buku di perpustakaan yang nyaman", "memasak di dapur yang ramai",
-        "terbang melintasi awan", "menatap cakrawala kota dari atap gedung"
-    ],
-    "lokasi": [
-        "di permukaan planet Mars yang tandus", "di jalanan Tokyo yang basah oleh hujan neon",
-        "di dalam hutan lebat yang berkabut", "di sebuah kastil abad pertengahan",
-        "di pasar malam yang ramai di Indonesia", "di stasiun luar angkasa yang sunyi"
-    ],
-    "pencahayaan": [
-        "saat golden hour", "di tengah malam, diterangi bulan purnama",
-        "di pagi yang cerah dan berkabut", "dengan pencahayaan dramatis dan bayangan tajam",
-        "dengan lampu studio yang lembut"
-    ],
-    "sudut_kamera": [
-        "extreme close-up", "wide shot", "drone shot dari atas",
-        "tracking shot", "point-of-view (POV)"
-    ],
-    "detail_tambahan": [
-        "dengan partikel debu yang melayang di udara", "jalanan yang berkilau basah",
-        "dengan efek lens flare sinematik", "dengan angin lembut meniup dedaunan",
-        "dengan asap atau uap yang mengepul"
+        "Fotorealistik, sinematik 35mm", "Video dokumenter alam liar", "Gaya anime Ghibli", 
+        "Cyberpunk, penuh lampu neon", "Film noir, hitam putih", "Fantasi epik",
+        "Lukisan cat air", "Stop-motion dengan tanah liat", "Video game 8-bit retro"
     ]
 }
 
-# --- DESAIN ANTARMUKA APLIKASI ---
+# --- DESAIN ANTARMUKA APLIKASI v2.0 ---
 
-st.set_page_config(page_title="VidPrompt Architect", layout="wide")
+st.set_page_config(page_title="VidPrompt Architect v2.0", layout="wide")
 
-st.title("🚀 VidPrompt Architect")
-st.markdown("Generator Prompt Cerdas untuk AI Video")
+st.title("🚀 VidPrompt Architect v2.0")
+st.markdown("Konfigurator Adegan untuk AI Video Generatif (VEO3, Sora, dll.)")
 
-st.sidebar.header("Pengaturan Adegan")
+# --- BAGIAN PENGATURAN TEKNIS (DI SIDEBAR) ---
+st.sidebar.header("⚙️ Parameter Teknis")
 
-# Membuat pilihan di sidebar
-pilihan = {}
-for key, value in options.items():
-    # Mengubah key menjadi judul yang lebih rapi (contoh: 'gaya_visual' -> 'Gaya Visual')
-    display_name = key.replace('_', ' ').title()
-    pilihan[key] = st.sidebar.selectbox(display_name, value)
+resolusi = st.sidebar.selectbox(
+    "Resolusi & Kualitas",
+    ["HD (1080p)", "4K", "8K Ultra HD"],
+    index=1 # Nilai default adalah 4K
+)
 
-# Tombol untuk generate
-col1, col2 = st.columns([1, 4])
+rasio_aspek = st.sidebar.selectbox(
+    "Rasio Aspek (Untuk Platform)",
+    ["16:9 (Widescreen - YouTube, Vimeo)", 
+     "9:16 (Vertikal - TikTok, Reels, Shorts)", 
+     "1:1 (Persegi - Instagram Feed)"]
+)
 
-with col1:
-    generate_button = st.button("Buat Prompt ✨", use_container_width=True)
-    random_button = st.button("Beri Aku Kejutan! 🎲", use_container_width=True)
+durasi = st.sidebar.slider(
+    "Perkiraan Durasi (detik)",
+    min_value=4,
+    max_value=30,
+    value=10 # Nilai default adalah 10 detik
+)
 
-# Tempat untuk menampilkan hasil
-with col2:
-    if generate_button:
-        # Menggabungkan pilihan pengguna menjadi sebuah prompt
-        prompt = (
-            f"{pilihan['gaya_visual']}. "
-            f"{pilihan['subjek_utama']} {pilihan['aksi_kegiatan']} {pilihan['lokasi']}, {pilihan['pencahayaan']}. "
-            f"Sudut kamera: {pilihan['sudut_kamera']}. "
-            f"Detail: {pilihan['detail_tambahan']}."
-        )
-        st.subheader("Prompt Anda Siap Digunakan:")
-        st.code(prompt, language=None)
-        st.info("Salin prompt di atas dan tempelkan ke AI generator video favorit Anda (Sora, Runway, Pika, dll.)")
+# --- BAGIAN KREATIF (DI HALAMAN UTAMA) ---
+st.header("🎬 Deskripsi Adegan Kreatif")
 
-    if random_button:
-        # Memilih opsi acak dari setiap kategori
-        random_prompt_parts = {key: random.choice(value) for key, value in options.items()}
-        prompt = (
-            f"{random_prompt_parts['gaya_visual']}. "
-            f"{random_prompt_parts['subjek_utama']} {random_prompt_parts['aksi_kegiatan']} {random_prompt_parts['lokasi']}, {random_prompt_parts['pencahayaan']}. "
-            f"Sudut kamera: {random_prompt_parts['sudut_kamera']}. "
-            f"Detail: {random_prompt_parts['detail_tambahan']}."
-        )
-        st.subheader("Prompt Kejutan Anda:")
-        st.code(prompt, language=None)
-        st.info("Tidak suka? Coba klik tombol kejutan lagi untuk ide baru!")
+# Gaya Visual tetap menggunakan dropdown untuk konsistensi
+gaya_pilihan = st.selectbox("Pilih Gaya Visual Dasar:", options["gaya_visual"])
+
+# Input bebas untuk Subjek dan Aksi (Ide dari "Isi Otak Kita")
+subjek_input = st.text_input(
+    "Subjek Utama:",
+    placeholder="Contoh: Seekor naga kristal raksasa, seorang anak kecil dengan robot peliharaannya"
+)
+
+skenario_input = st.text_area(
+    "Skenario Detail (Aksi, Lokasi, Mood):",
+    placeholder="Contoh: terbang rendah melintasi lembah futuristik yang dipenuhi air terjun neon. Suasananya megah dan sedikit misterius. Awan badai berkumpul di kejauhan.",
+    height=150
+)
+
+# Tombol untuk menghasilkan prompt
+generate_button = st.button("Buat Prompt Lengkap ✨", use_container_width=True)
+
+# --- LOGIKA UNTUK MENGHASILKAN PROMPT BARU ---
+if generate_button:
+    if not subjek_input or not skenario_input:
+        st.error("Harap isi bagian 'Subjek Utama' dan 'Skenario Detail'.")
+    else:
+        # Memformat parameter teknis menjadi tag yang umum digunakan
+        kualitas_tag = f"--quality {resolusi.split(' ')[0]}"
+        rasio_tag = f"--ar {rasio_aspek.split(' ')[-1].replace(':', ' ')}" # menghasilkan --ar 9 16
+        durasi_tag = f"--duration {durasi}"
+        
+        # Menggabungkan semua bagian menjadi prompt akhir
+        deskripsi_kreatif = f"{gaya_pilihan}. {subjek_input} {skenario_input}"
+        parameter_teknis = f"{kualitas_tag} {rasio_tag} {durasi_tag}"
+        
+        prompt_lengkap = f"{deskripsi_kreatif}\n{parameter_teknis}"
+        
+        st.subheader("✅ Prompt Profesional Anda Siap Digunakan:")
+        st.code(prompt_lengkap, language=None)
+        st.info("Salin teks di atas. Bagian pertama adalah deskripsi kreatif, dan baris kedua adalah parameter teknis yang bisa dipahami oleh banyak model AI canggih.")
+
